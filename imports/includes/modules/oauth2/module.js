@@ -48,8 +48,15 @@ var Module = class {
 		var self = this;
 		var global = this.global;
 
-		// oauth2
-		var modulescriptloader = global.getScriptLoader('oauth2loader', parentscriptloader);
+		// oauth2 module script loader
+		var modulescriptloader;
+		
+		// look if oauth2loader already created (e.g. for loading in node.js)
+		modulescriptloader = global.findScriptLoader('oauth2loader');
+
+		// if not, create on as child as parent script loader passed in argument
+		if (!modulescriptloader)
+		modulescriptloader = global.getScriptLoader('oauth2loader', parentscriptloader);
 		
 		var xtraroot = './includes';
 		
@@ -95,6 +102,10 @@ var Module = class {
 		
 		global.registerHook('alterLogoutForm_hook', this.name, this.alterLogoutForm_hook);
 		global.registerHook('handleLogoutSubmit_hook', this.name, this.handleLogoutSubmit_hook);
+		
+		// signal module is ready
+		var rootscriptloader = global.getRootScriptLoader();
+		rootscriptloader.signalEvent('on_oauth2_module_ready');
 	}
 	
 	postRegisterModule() {

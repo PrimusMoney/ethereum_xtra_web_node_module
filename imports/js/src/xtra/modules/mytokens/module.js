@@ -4,7 +4,7 @@ var Module = class {
 	
 	constructor() {
 		this.name = 'mytokens';
-		this.current_version = "0.14.7.2020.10.15";
+		this.current_version = "0.14.8.2020.10.21";
 		
 		this.global = null; // put by global on registration
 		this.isready = false;
@@ -33,8 +33,15 @@ var Module = class {
 		var self = this;
 		var global = this.global;
 
-		// mytokens
-		var modulescriptloader = global.getScriptLoader('mytokensloader', parentscriptloader);
+		// mytokens module script loader
+		var modulescriptloader;
+		
+		// look if oauth2loader already created (e.g. for loading in node.js)
+		modulescriptloader = global.findScriptLoader('mytokensloader');
+
+		// if not, create on as child as parent script loader passed in argument
+		if (!modulescriptloader)
+		modulescriptloader = global.getScriptLoader('mytokensloader', parentscriptloader);
 		
 		var xtraroot = './js/src/xtra';
 		
@@ -70,6 +77,10 @@ var Module = class {
 		
 		global.registerHook('getVersionInfo_hook', this.name, this.getVersionInfo_hook);
 		global.modifyHookPriority('getVersionInfo_hook', this.name, -5);
+		
+		// signal module is ready
+		var rootscriptloader = global.getRootScriptLoader();
+		rootscriptloader.signalEvent('on_mytokens_module_ready');
 	}
 	
 	postRegisterModule() {

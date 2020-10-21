@@ -69,6 +69,11 @@ class ReactNativeLoad {
 			});
 			
 			
+			// end of modules load
+			rootscriptloader.registerEventListener('@primusmoney/on_xtra_web_module_ready', function(eventname) {
+				if (callback)
+					callback(null, self);
+			});			
 		}
 		catch(e) {
 			console.log('exception in ReactNativeLoad.init: ' + e);

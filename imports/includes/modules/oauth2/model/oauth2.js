@@ -11,7 +11,7 @@ var OAuth2ServerInterface = class {
 		this.oauth2_server_access_instance = null;
 	}
 	
-	getOAuth2ServerAccessInstance(session) {
+	getOAuth2ServerAccessInstance(session, providername) {
 		if (this.oauth2_server_access_instance)
 			return this.oauth2_server_access_instance;
 		
@@ -24,7 +24,12 @@ var OAuth2ServerInterface = class {
 		
 		var Config = _globalscope.simplestore.Config;
 
-		var oauth2_provider = (Config && (Config.get)  && (Config.get('oauth2_provider')) ? Config.get('oauth2_provider') : null);
+		var oauth2_provider;
+
+		if (providername)
+			oauth2_provider = providername;
+		else
+			oauth2_provider = (Config && (Config.get)  && (Config.get('oauth2_provider')) ? Config.get('oauth2_provider') : null);
 
 		var result = []; 
 		var inputparams = [];

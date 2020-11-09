@@ -4,6 +4,7 @@ var Module = class {
 	
 	constructor() {
 		this.name = 'oauth2';
+		this.current_version = "0.20.0.2020.11.12";
 		
 		this.global = null; // put by global on registration
 		this.isready = false;
@@ -90,6 +91,8 @@ var Module = class {
 		
 		var global = this.global;
 		
+		global.registerHook('getVersionInfo_hook', this.name, this.getVersionInfo_hook);
+
 		global.registerHook('getAuthKeyServerAccessInstance_hook', this.name, this.getAuthKeyServerAccessInstance_hook);
 		
 		// angular login page
@@ -125,6 +128,34 @@ var Module = class {
 	//
 	// hooks
 	//
+	getVersionInfo_hook(result, params) {
+		console.log('getVersionInfo_hook called for ' + this.name);
+		
+		var global = this.global;
+		var _globalscope = global.getExecutionGlobalScope();
+		var Constants = _globalscope.simplestore.Constants;
+		var oauth2_versioninfo = Constants.get('oauth2_version');
+		
+		var versioninfos = params[0];
+		
+		var versioninfo = {};
+		
+		versioninfo.label = global.t('oauth2');
+
+		if (oauth2_versioninfo && oauth2_versioninfo.value)
+			versioninfo.value = oauth2_versioninfo.value; // overloaded
+		else if (this.current_version)
+			versioninfo.value = this.current_version; // hard-coded value
+		else
+			versioninfo.value = global.t('unknown');
+		
+		versioninfos.push(versioninfo);
+
+		
+		result.push({module: this.name, handled: true});
+		
+		return true;
+	}
 
 	_getAppObject() {
 		var global = this.global;
@@ -161,7 +192,14 @@ var Module = class {
 		
 		return this.oauth2_interface;
 	}
+
+	getOAuth2ServerAccessInstance(session, providername) {
+		var oauth2interface = this.getOAuth2Interface();
+
+		return oauth2interface.getOAuth2ServerAccessInstance(session, providername);
+	}
 	
+	// authkey hook
 	getAuthKeyServerAccessInstance_hook(result, params) {
 		console.log('getAuthKeyServerAccessInstance_hook called for ' + this.name);
 		
@@ -441,6 +479,8 @@ var Module = class {
 		
 
 	}
+
+	
 	//
 	// API
 	//

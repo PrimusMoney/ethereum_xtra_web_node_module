@@ -4,7 +4,7 @@ var Module = class {
 	
 	constructor() {
 		this.name = 'mytokens';
-		this.current_version = "0.14.9.2020.10.29";
+		this.current_version = "0.20.0.2020.11.12";
 		
 		this.global = null; // put by global on registration
 		this.isready = false;

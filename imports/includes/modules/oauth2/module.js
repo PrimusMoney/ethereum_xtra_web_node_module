@@ -4,7 +4,7 @@ var Module = class {
 	
 	constructor() {
 		this.name = 'oauth2';
-		this.current_version = "0.20.0.2020.11.12";
+		this.current_version = "0.20.1.2020.11.23";
 		
 		this.global = null; // put by global on registration
 		this.isready = false;
@@ -362,8 +362,22 @@ var Module = class {
 		}*/
 		
 		var oauth2interface = this.getOAuth2Interface();
+		var params = {}; // default {client: 'web', closewindow: '0', appurl: 'none'}
+
+		params.client = 'web';
+		params.closewindow = '0';
+		params.appurl = 'none';
 		
-		oauth2interface.getOAuth2AuthorizeUrl(session, function(err, res) {
+/* 		var currenturl = window.location.href;
+
+		if (currenturl.indexOf('#') != -1) {
+			// strip anchors
+			currenturl = currenturl.slice(0, currenturl.indexOf('#'));
+		}
+
+		params.appurl = currenturl + '?sessionuuid=' + session.getSessionUUID();
+ */		
+		oauth2interface.getOAuth2AuthorizeUrl(session, params, function(err, res) {
 			var oauth_url = res;
 			
 			session.setSessionVariable('oauth2_authorize_url', oauth_url);

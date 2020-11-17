@@ -104,7 +104,7 @@ class OAuth2ServerAccess {
 		
 	}
 	
-	oauth2_authorize_url(callback) {
+	oauth2_authorize_url(params, callback) {
 		console.log("OAuth2ServerAccess.oauth2_authorize_url called");
 		
 		var self = this;
@@ -115,6 +115,19 @@ class OAuth2ServerAccess {
 			
 			try {
 				var resource = "/url/authorize" + (providername ? '/' + providername : '');
+
+				// create query string parameters from params
+				if (params) {
+					var arr = Object.entries(params);
+					var paramstring = '';
+
+					for (var i = 0; i < (arr ? arr.length : 0); i++) {
+						paramstring += (i > 0 ? '&' : '') + arr[i][0] + '=' + encodeURIComponent(arr[i][1]);
+					}
+
+					if (paramstring.length)
+						resource += '?' + paramstring;
+				}
 				
 				self.rest_oauth2_get(resource, function (err, res) {
 					if (res) {

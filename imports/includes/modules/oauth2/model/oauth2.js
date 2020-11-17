@@ -51,10 +51,10 @@ var OAuth2ServerInterface = class {
 	}
 	
 	// api
-	getOAuth2AuthorizeUrl(session, callback) {
+	getOAuth2AuthorizeUrl(session, params, callback) {
 		var oauth2access = this.getOAuth2ServerAccessInstance(session);
 		
-		return oauth2access.oauth2_authorize_url(function(err, res) {
+		return oauth2access.oauth2_authorize_url(params, function(err, res) {
 			var oauth_authorize_url =  res;
 			
 			if (callback)

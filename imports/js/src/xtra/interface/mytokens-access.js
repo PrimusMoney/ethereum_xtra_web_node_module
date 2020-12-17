@@ -34,7 +34,42 @@ var MyTokensServerAccess = class {
 	}
 	
 	
-	// rest connection (on storage side) 
+	// rest connection
+	_checkRestConnectionHeader() {
+		if (!this.rest_connection)
+			return;
+			
+		var rest_connection = this.rest_connection;
+
+		var connection_header = rest_connection.header;
+		var session = this.session;
+
+		var calltokenstring = connection_header['calltoken'];
+		var calljson = (calltokenstring ? JSON.parse(calltokenstring) : {});
+
+		// auth part (if any)
+		if (session.authkey_server_access_instance && session.authkey_server_access_instance.rest_auth_connection) {
+			var rest_auth_connection = session.authkey_server_access_instance.rest_auth_connection;
+
+			if (rest_auth_connection._isReady()) {
+				var authurl =  session.authkey_server_access_instance.rest_auth_connection.getRestCallUrl();
+				
+				if (authurl) {
+					calljson.auth = authurl;
+				}
+			}
+			
+		}
+
+		// web3 part
+		if (session.ethereum_node_access_instance && session.ethereum_node_access_instance.web3providerurl) {
+			calljson.web3 = session.ethereum_node_access_instance.web3providerurl;
+		}
+
+		calltokenstring = JSON.stringify(calljson);
+		rest_connection.addToHeader({key: 'calltoken', value: calltokenstring});
+	}
+
 	getRestConnection() {
 		if (this.rest_connection)
 			return this.rest_connection;
@@ -44,7 +79,20 @@ var MyTokensServerAccess = class {
 
 	    this.rest_connection = this.session.createRestConnection(rest_server_url, rest_server_api_path);
 		
+		// set Header
+		this._checkRestConnectionHeader();
+		
 		return this.rest_connection;
+	}
+	
+	setRestConnection(restconnection) {
+		if (!restconnection)
+			return;
+		
+		this.rest_connection = restconnection;
+
+		// set Header
+		this._checkRestConnectionHeader();
 	}
 	
 	rest_get(resource, callback) {
@@ -181,6 +229,43 @@ var MyTokensServerAccess = class {
 		return promise;
 		
 	}
+
+	// explorer
+	account_transactions(address, callback) {
+		console.log("MyTokensServerAccess.account_transactions called");
+		
+		var self = this;
+		var session = this.session;
+	
+		var promise = new Promise(function (resolve, reject) {
+			
+			try {
+				var resource = "/web3/account/" + address + "/txs";
+				
+				self.rest_get(resource, function (err, res) {
+					if (res && (res['status'] == 1)) {
+						var txlist = res['data'];
+						
+						if (callback)
+							callback(null, txlist);
+						
+						return resolve(txlist);
+					}
+					else {
+						reject('rest error calling ' + resource);
+					}
+					
+				});
+			}
+			catch(e) {
+				reject('rest exception: ' + e);
+			}
+		});
+		
+		return promise;
+		
+	}
+
 
 }
 

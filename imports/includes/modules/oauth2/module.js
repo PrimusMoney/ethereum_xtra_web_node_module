@@ -4,7 +4,7 @@ var Module = class {
 	
 	constructor() {
 		this.name = 'oauth2';
-		this.current_version = "0.20.4.2020.12.05";
+		this.current_version = "0.20.5.2021.01.15";
 		
 		this.global = null; // put by global on registration
 		this.isready = false;

@@ -1,5 +1,6 @@
 /**
  * @author PrimusMoney
+ * @name @primusmoney/ethereum_xtra_web
  * @homepage https://www.primusmoney.com/
  * @license UNLICENSED
  */
